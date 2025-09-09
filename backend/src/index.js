@@ -27,9 +27,13 @@ const server = createServer(app);
 app.use(cors({
   origin: process.env.FRONTEND_URL?.split(",") || [
     "http://localhost:5173",
-    "https://www.suhtech.shop"
+    "https://www.suhtech.shop",
+    "https://suhtech.shop"
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  optionsSuccessStatus: 200
 }));
 
 // Socket.IO config
@@ -37,9 +41,11 @@ const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL?.split(",") || [
       "http://localhost:5173",
-      "https://www.suhtech.shop"
+      "https://www.suhtech.shop",
+      "https://suhtech.shop"
     ],
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -61,6 +67,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Rate limiting - DISABLED for testing
 // app.use(globalRateLimit);
+
+// Handle preflight requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
