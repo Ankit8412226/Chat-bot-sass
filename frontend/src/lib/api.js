@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -101,27 +101,27 @@ export const chatAPI = {
 // Widget API (for external use)
 export const widgetAPI = {
   start: (apiKey, data) =>
-    axios.post('/api/chat/start', data, {
+    axios.post(`${import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api'}/chat/start`, data, {
       headers: { 'X-API-Key': apiKey }
     }),
 
   sendMessage: (apiKey, data) =>
-    axios.post('/api/chat/message', data, {
+    axios.post(`${import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api'}/chat/message`, data, {
       headers: { 'X-API-Key': apiKey }
     }),
 
   getHistory: (apiKey, sessionId) =>
-    axios.get(`/api/chat/${sessionId}/history`, {
+    axios.get(`${import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api'}/chat/${sessionId}/history`, {
       headers: { 'X-API-Key': apiKey }
     }),
 
   endChat: (apiKey, sessionId, data) =>
-    axios.post(`/api/chat/${sessionId}/end`, data, {
+    axios.post(`${import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api'}/chat/${sessionId}/end`, data, {
       headers: { 'X-API-Key': apiKey }
     }),
 
   requestHandoff: (apiKey, data) =>
-    axios.post(`/api/chat/${data.sessionId}/handoff`, data, {
+    axios.post(`${import.meta.env.VITE_API_URL || 'https://api.suhtech.shop/api'}/chat/${data.sessionId}/handoff`, data, {
       headers: { 'X-API-Key': apiKey }
     })
 };
