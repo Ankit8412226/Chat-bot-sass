@@ -23,29 +23,21 @@ loadEnv();
 const app = express();
 const server = createServer(app);
 
-// CORS configuration
+// CORS configuration - Allow all origins
 app.use(cors({
-  origin: process.env.FRONTEND_URL?.split(",") || [
-    "http://localhost:5173",
-    "https://www.suhtech.shop",
-    "https://suhtech.shop"
-  ],
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'Origin', 'X-Requested-With', 'Accept'],
   optionsSuccessStatus: 200
 }));
 
-// Socket.IO config
+// Socket.IO config - Allow all origins
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL?.split(",") || [
-      "http://localhost:5173",
-      "https://www.suhtech.shop",
-      "https://suhtech.shop"
-    ],
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: false
   }
 });
 
@@ -68,12 +60,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Rate limiting - DISABLED for testing
 // app.use(globalRateLimit);
 
-// Handle preflight requests
+// Handle preflight requests - Allow all origins
 app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key, Origin, X-Requested-With, Accept');
+  res.header('Access-Control-Allow-Credentials', 'false');
   res.sendStatus(200);
 });
 
