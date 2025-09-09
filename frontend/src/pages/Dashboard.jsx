@@ -15,7 +15,7 @@ import { chatAPI, tenantAPI } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 
 const Dashboard = () => {
-  const { user, tenant, refreshTenant } = useAuth();
+  const { user, tenant, refreshTenant, isAgent } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,11 @@ const Dashboard = () => {
         </div>
       </div>
     );
+  }
+
+  // Agent-specific dashboard view
+  if (isAgent) {
+    return <AgentDashboard user={user} tenant={tenant} conversations={conversations} />;
   }
 
   const statusArray = analytics?.conversations?.statusBreakdown || [];
@@ -353,6 +358,252 @@ const Dashboard = () => {
                 <h4 className="font-medium text-gray-900">Test Integration</h4>
                 <p className="text-sm text-gray-500">Verify handoff flow</p>
               </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Agent-specific dashboard component
+const AgentDashboard = ({ user, tenant, conversations }) => {
+  const myConversations = conversations.filter(c => c.assignedAgent === user._id);
+  const pendingHandoffs = conversations.filter(c => c.status === 'transferred' && !c.assignedAgent);
+  const activeConversations = myConversations.filter(c => c.status === 'active');
+
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  return (
+    <div className="p-6 bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+      {/* Agent Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back, {user.name}! 👋
+            </h1>
+            <p className="text-gray-600">
+              You're logged in as a support agent for <span className="font-semibold text-blue-600">{tenant?.name}</span>
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Online</span>
+            </div>
+            <Link
+              to="/handoff-center"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center space-x-2"
+            >
+              <Headphones className="h-5 w-5" />
+              <span>Handoff Center</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Agent Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">My Active Chats</p>
+              <p className="text-3xl font-bold text-blue-600">{activeConversations.length}</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <MessageSquare className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Pending Handoffs</p>
+              <p className="text-3xl font-bold text-orange-600">{pendingHandoffs.length}</p>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-lg">
+              <AlertCircle className="h-6 w-6 text-orange-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Assigned</p>
+              <p className="text-3xl font-bold text-green-600">{myConversations.length}</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <UserCheck className="h-6 w-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Response Time</p>
+              <p className="text-3xl font-bold text-purple-600">2.3m</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-lg">
+              <Clock className="h-6 w-6 text-purple-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Pending Handoffs */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Pending Handoffs</h3>
+              <Badge variant="warning">{pendingHandoffs.length}</Badge>
+            </div>
+          </div>
+          <div className="p-6">
+            {pendingHandoffs.length === 0 ? (
+              <div className="text-center py-8">
+                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                <p className="text-gray-600">No pending handoffs! Great job! 🎉</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pendingHandoffs.slice(0, 3).map((conversation) => (
+                  <div key={conversation._id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-gray-900">
+                        {conversation.visitor?.name || 'Anonymous'}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {formatTimeAgo(conversation.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {conversation.messageCount} messages
+                    </p>
+                    <Link
+                      to="/handoff-center"
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      Take conversation →
+                    </Link>
+                  </div>
+                ))}
+                {pendingHandoffs.length > 3 && (
+                  <Link
+                    to="/handoff-center"
+                    className="block text-center text-blue-600 hover:text-blue-700 font-medium py-2"
+                  >
+                    View all {pendingHandoffs.length} pending handoffs
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* My Active Conversations */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">My Active Conversations</h3>
+              <Badge variant="success">{activeConversations.length}</Badge>
+            </div>
+          </div>
+          <div className="p-6">
+            {activeConversations.length === 0 ? (
+              <div className="text-center py-8">
+                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">No active conversations</p>
+                <p className="text-sm text-gray-500 mt-2">Take a handoff to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeConversations.slice(0, 3).map((conversation) => (
+                  <div key={conversation._id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-gray-900">
+                        {conversation.visitor?.name || 'Anonymous'}
+                      </span>
+                      <Badge variant="success">Active</Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Last message: {formatTimeAgo(conversation.updatedAt)}
+                    </p>
+                    <Link
+                      to="/handoff-center"
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      Continue conversation →
+                    </Link>
+                  </div>
+                ))}
+                {activeConversations.length > 3 && (
+                  <Link
+                    to="/handoff-center"
+                    className="block text-center text-blue-600 hover:text-blue-700 font-medium py-2"
+                  >
+                    View all {activeConversations.length} conversations
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            to="/handoff-center"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Headphones className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">Handoff Center</p>
+              <p className="text-sm text-gray-600">Manage customer conversations</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/knowledge-base"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="p-2 bg-green-100 rounded-lg">
+              <BookOpen className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">Knowledge Base</p>
+              <p className="text-sm text-gray-600">Access help articles</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/profile"
+            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Users className="h-5 w-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="font-medium text-gray-900">Profile</p>
+              <p className="text-sm text-gray-600">Update your settings</p>
             </div>
           </Link>
         </div>

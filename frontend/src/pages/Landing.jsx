@@ -220,6 +220,185 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Choose the plan that fits your business needs. Start free and scale as you grow.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
+                <p className="text-gray-600">Perfect for getting started</p>
+              </div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">1,000 messages/month</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Basic AI chatbot</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Email support</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Basic analytics</span>
+                </li>
+              </ul>
+              <a href="/signup" className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-center block">
+                Get Started Free
+              </a>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-blue-500 shadow-xl hover:shadow-2xl transition-all relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  Most Popular
+                </span>
+              </div>
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
+                <div className="text-4xl font-bold text-gray-900 mb-2">$20</div>
+                <p className="text-gray-600">per month</p>
+              </div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">10,000 messages/month</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Advanced AI chatbot</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Human handoff</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Priority support</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Advanced analytics</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">API access</span>
+                </li>
+              </ul>
+              <a href="/signup" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all text-center block">
+                Start Pro Trial
+              </a>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                <div className="text-4xl font-bold text-gray-900 mb-2">$30</div>
+                <p className="text-gray-600">per month</p>
+              </div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Unlimited messages</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Custom AI training</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Multi-agent support</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">24/7 phone support</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Custom integrations</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">SLA guarantee</span>
+                </li>
+              </ul>
+              <a href="/contact" className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-center block">
+                Contact Sales
+              </a>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-4">All plans include:</p>
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
+              <span className="flex items-center">
+                <Shield className="h-4 w-4 mr-2 text-green-500" />
+                SSL Security
+              </span>
+              <span className="flex items-center">
+                <Database className="h-4 w-4 mr-2 text-green-500" />
+                Knowledge Base
+              </span>
+              <span className="flex items-center">
+                <Globe className="h-4 w-4 mr-2 text-green-500" />
+                Widget Integration
+              </span>
+              <span className="flex items-center">
+                <BarChart3 className="h-4 w-4 mr-2 text-green-500" />
+                Basic Analytics
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
