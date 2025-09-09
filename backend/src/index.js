@@ -148,7 +148,7 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // In Vercel serverless environment, Vercel provides the listener; skip .listen()
 if (!process.env.VERCEL) {
