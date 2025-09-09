@@ -39,6 +39,20 @@ class HandoffService {
           { type: 'handoff_queued' }
         );
 
+        // Notify all agents in tenant about queued handoff
+        const io = this.getSocketIO();
+        if (io) {
+          io.to(`tenant-${conversation.tenantId._id}`).emit('handoff-queued', {
+            conversationId,
+            customer: conversation.visitor,
+            reason,
+            priority,
+            estimatedWait: this.estimateWaitTime(conversation.tenantId._id),
+            timestamp: new Date()
+          });
+          console.log(`Queued handoff notification sent to tenant ${conversation.tenantId._id}`);
+        }
+
         return {
           status: 'queued',
           message: 'Request queued - no agents available',
@@ -59,6 +73,7 @@ class HandoffService {
       // Notify agent via Socket.IO
       const io = this.getSocketIO();
       if (io) {
+        // Notify specific agent
         io.to(`agent-${selectedAgent._id}`).emit('handoff-request', {
           conversationId,
           customer: conversation.visitor,
@@ -66,6 +81,19 @@ class HandoffService {
           priority,
           messages: await this.getRecentMessages(conversationId, 5)
         });
+
+        // Also broadcast to all agents in the tenant for backup
+        io.to(`tenant-${conversation.tenantId._id}`).emit('new-handoff', {
+          conversationId,
+          customer: conversation.visitor,
+          reason,
+          priority,
+          assignedAgent: selectedAgent._id,
+          agentName: selectedAgent.name,
+          timestamp: new Date()
+        });
+
+        console.log(`Handoff notification sent to agent ${selectedAgent._id} and tenant ${conversation.tenantId._id}`);
       }
 
       // Add system message

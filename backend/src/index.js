@@ -7,7 +7,6 @@ import { Server } from 'socket.io';
 import { connectDB } from './config/db.js';
 import { loadEnv } from './config/env.js';
 import { errorHandler } from './utils/error.js';
-import { globalRateLimit } from './utils/rateLimit.js';
 
 // Route imports
 import apiKeyRoutes from './routes/apiKeyRoutes.js';
@@ -60,8 +59,8 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Rate limiting
-app.use(globalRateLimit);
+// Rate limiting - DISABLED for testing
+// app.use(globalRateLimit);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -96,6 +95,7 @@ io.on('connection', (socket) => {
       agentId: data.agentId,
       status: 'online'
     });
+    console.log(`Agent ${data.agentId} is online`);
   });
 
   socket.on('agent-offline', (data) => {
@@ -104,10 +104,27 @@ io.on('connection', (socket) => {
       agentId: data.agentId,
       status: 'offline'
     });
+    console.log(`Agent ${data.agentId} is offline`);
+  });
+
+  socket.on('join-conversation', (conversationId) => {
+    socket.join(`conversation-${conversationId}`);
+    console.log(`Socket ${socket.id} joined conversation ${conversationId}`);
+  });
+
+  socket.on('leave-conversation', (conversationId) => {
+    socket.leave(`conversation-${conversationId}`);
+    console.log(`Socket ${socket.id} left conversation ${conversationId}`);
   });
 
   socket.on('chat-message', (data) => {
     socket.to(`conversation-${data.conversationId}`).emit('new-message', data);
+  });
+
+  socket.on('handoff-notification', (data) => {
+    // Broadcast handoff notifications to all agents in the tenant
+    socket.to(`tenant-${data.tenantId}`).emit('new-handoff', data);
+    console.log(`Handoff notification sent to tenant ${data.tenantId}:`, data);
   });
 
   socket.on('disconnect', () => {

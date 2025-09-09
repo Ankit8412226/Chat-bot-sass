@@ -1,6 +1,7 @@
 import { MessageCircle, Minimize2, Send, User, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { widgetAPI } from '../lib/api.js';
+import socketManager from '../lib/socket.js';
 
 const ChatWidget = ({
   apiKey,
@@ -33,6 +34,41 @@ const ChatWidget = ({
     scrollToBottom();
   }, [messages]);
 
+  // Socket.IO setup for real-time communication
+  useEffect(() => {
+    if (!sessionId) return;
+
+    // Listen for agent messages
+    const handleAgentMessage = (data) => {
+      if (data.role === 'agent') {
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          role: 'agent',
+          content: data.content,
+          timestamp: new Date(data.timestamp)
+        }]);
+      }
+    };
+
+    const handleAgentJoined = (data) => {
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        role: 'system',
+        content: `${data.agent.name} has joined the conversation`,
+        timestamp: new Date(),
+        isTransfer: true
+      }]);
+    };
+
+    socketManager.on('new-message', handleAgentMessage);
+    socketManager.on('agent-joined', handleAgentJoined);
+
+    return () => {
+      socketManager.off('new-message', handleAgentMessage);
+      socketManager.off('agent-joined', handleAgentJoined);
+    };
+  }, [sessionId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -61,6 +97,9 @@ const ChatWidget = ({
           timestamp: new Date()
         }]);
       }
+
+      // Join conversation room for real-time updates
+      socketManager.joinConversation(response.data.sessionId);
 
     } catch (error) {
       console.error('Failed to start conversation:', error);

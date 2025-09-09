@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Badge from '../components/Badge.jsx';
 import { chatAPI } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
+import socketManager from '../lib/socket.js';
 
 const HandoffCenter = () => {
   const { user, isAgent } = useAuth();
@@ -22,6 +23,77 @@ const HandoffCenter = () => {
     const interval = setInterval(loadConversations, 10000); // Refresh every 10 seconds
     return () => clearInterval(interval);
   }, [filter]);
+
+  // Socket.IO setup for real-time notifications
+  useEffect(() => {
+    if (!user || !isAgent) return;
+
+    const token = localStorage.getItem('token');
+    const tenantId = user.tenantId;
+
+    // Connect to socket
+    socketManager.connect(token, tenantId);
+
+    // Set agent as online
+    socketManager.setAgentOnline(user._id, tenantId);
+
+    // Listen for handoff notifications
+    const handleNewHandoff = (data) => {
+      console.log('New handoff received:', data);
+      setNewHandoffs(prev => prev + 1);
+
+      if (notifications) {
+        toast.success(`New handoff request from ${data.customer?.name || 'Customer'}`, {
+          duration: 5000,
+          position: 'top-right'
+        });
+      }
+
+      // Refresh conversations to show new handoff
+      loadConversations();
+    };
+
+    const handleHandoffQueued = (data) => {
+      console.log('Handoff queued:', data);
+      setNewHandoffs(prev => prev + 1);
+
+      if (notifications) {
+        toast.info(`Handoff queued - ${data.estimatedWait} wait time`, {
+          duration: 4000,
+          position: 'top-right'
+        });
+      }
+
+      loadConversations();
+    };
+
+    const handleHandoffRequest = (data) => {
+      console.log('Direct handoff request:', data);
+      setNewHandoffs(prev => prev + 1);
+
+      if (notifications) {
+        toast.success(`You have a new handoff request!`, {
+          duration: 6000,
+          position: 'top-right'
+        });
+      }
+
+      loadConversations();
+    };
+
+    // Register event listeners
+    socketManager.on('new-handoff', handleNewHandoff);
+    socketManager.on('handoff-queued', handleHandoffQueued);
+    socketManager.on('handoff-request', handleHandoffRequest);
+
+    // Cleanup on unmount
+    return () => {
+      socketManager.off('new-handoff', handleNewHandoff);
+      socketManager.off('handoff-queued', handleHandoffQueued);
+      socketManager.off('handoff-request', handleHandoffRequest);
+      socketManager.setAgentOffline(user._id, tenantId);
+    };
+  }, [user, isAgent, notifications]);
 
   // Play notification sound for new handoffs
   useEffect(() => {
@@ -136,6 +208,16 @@ const HandoffCenter = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* New handoffs indicator */}
+          {newHandoffs > 0 && (
+            <div className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {newHandoffs} new handoff{newHandoffs > 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
+
           {/* Notification toggle */}
           <button
             onClick={() => setNotifications(!notifications)}
@@ -150,16 +232,6 @@ const HandoffCenter = () => {
               {notifications ? 'Notifications On' : 'Notifications Off'}
             </span>
           </button>
-
-          {/* New handoffs indicator */}
-          {newHandoffs > 0 && (
-            <div className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg">
-              <AlertCircle className="h-4 w-4" />
-              <span className="text-sm font-medium">
-                {newHandoffs} new handoff{newHandoffs > 1 ? 's' : ''}
-              </span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -191,7 +263,13 @@ const HandoffCenter = () => {
                 conversations.map((conversation) => (
                   <div
                     key={conversation._id}
-                    onClick={() => setActiveConversation(conversation)}
+                    onClick={() => {
+                      setActiveConversation(conversation);
+                      // Clear new handoffs counter when viewing a conversation
+                      if (newHandoffs > 0) {
+                        setNewHandoffs(0);
+                      }
+                    }}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                       activeConversation?._id === conversation._id
                         ? 'border-primary-500 bg-primary-50'

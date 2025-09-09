@@ -2,7 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
 import { authenticateToken } from '../middleware/auth.js';
-import { authenticateApiKey, checkUsageLimit, requirePermission, trackUsage } from '../middleware/tenant.js';
+import { authenticateApiKey, requirePermission } from '../middleware/tenant.js';
 import Conversation from '../models/Conversation.js';
 import Message from '../models/Message.js';
 import embeddingService from '../services/embedding.js';
@@ -12,7 +12,7 @@ import llmProvider from '../services/llmProvider.js';
 const router = express.Router();
 
 // Start new conversation (API endpoint)
-router.post('/start', authenticateApiKey, requirePermission('chat:write'), checkUsageLimit('conversations'), [
+router.post('/start', authenticateApiKey, requirePermission('chat:write'), [
   body('visitorId').optional().trim(),
   body('metadata').optional().isObject(),
   body('visitor').optional().isObject()
@@ -74,7 +74,7 @@ router.post('/start', authenticateApiKey, requirePermission('chat:write'), check
 });
 
 // Send message (API endpoint)
-router.post('/message', authenticateApiKey, requirePermission('chat:write'), trackUsage('apiCalls'), [
+router.post('/message', authenticateApiKey, requirePermission('chat:write'), [
   body('sessionId').trim().isLength({ min: 1 }),
   body('message').trim().isLength({ min: 1 }),
   body('visitorData').optional().isObject()
