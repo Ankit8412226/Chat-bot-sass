@@ -118,6 +118,11 @@ export const widgetAPI = {
   endChat: (apiKey, sessionId, data) =>
     axios.post(`/api/chat/${sessionId}/end`, data, {
       headers: { 'X-API-Key': apiKey }
+    }),
+
+  requestHandoff: (apiKey, data) =>
+    axios.post(`/api/chat/${data.sessionId}/handoff`, data, {
+      headers: { 'X-API-Key': apiKey }
     })
 };
 

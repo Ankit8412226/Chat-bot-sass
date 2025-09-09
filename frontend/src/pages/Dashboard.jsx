@@ -1,11 +1,12 @@
 import {
-    Activity,
-    BookOpen,
-    Clock,
-    Key,
-    MessageSquare,
-    Star,
-    TrendingUp
+  Activity,
+  BookOpen,
+  Clock,
+  Key,
+  MessageSquare,
+  Star,
+  TrendingUp,
+  Users
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -41,7 +42,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="p-6">
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/4"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -105,7 +106,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
@@ -321,6 +322,36 @@ const Dashboard = () => {
               <div>
                 <h4 className="font-medium text-gray-900">Test Chat</h4>
                 <p className="text-sm text-gray-500">Try your chatbot</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            to="/agents"
+            className="card hover:shadow-md transition-shadow cursor-pointer group"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
+                <Users className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Manage Agents</h4>
+                <p className="text-sm text-gray-500">Add team members</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            to="/integration-test"
+            className="card hover:shadow-md transition-shadow cursor-pointer group"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors">
+                <Activity className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Test Integration</h4>
+                <p className="text-sm text-gray-500">Verify handoff flow</p>
               </div>
             </div>
           </Link>

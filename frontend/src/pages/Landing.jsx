@@ -48,7 +48,7 @@ const Landing = () => {
       name: "Sarah Johnson",
       company: "TechCorp Inc.",
       rating: 5,
-      text: "Suh Tech's AI chatbot reduced our support tickets by 70% while improving customer satisfaction."
+      text: "BotBridge's AI chatbot reduced our support tickets by 70% while improving customer satisfaction."
     },
     {
       name: "Michael Chen",
@@ -89,8 +89,8 @@ const Landing = () => {
                 <Bot className="h-8 w-8 text-white" />
               </div>
               <div>
-                <div className="text-xl font-bold text-gray-900">Suh Tech</div>
-                <div className="text-xs text-gray-500">Private Limited</div>
+                <div className="text-xl font-bold text-gray-900">BotBridge</div>
+                <div className="text-xs text-gray-500">AI-Powered Support Platform</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -111,7 +111,7 @@ const Landing = () => {
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 ring-1 ring-inset ring-blue-600/20 mb-6">
                 <Zap className="h-4 w-4 mr-2" />
-                AI-Powered Customer Support Platform
+                BotBridge – AI-Powered Support Platform
               </div>
               <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent leading-tight">
                 Transform Support Into Growth Engine
@@ -287,7 +287,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 text-center text-white">
           <h3 className="text-4xl font-bold mb-6">Ready to Transform Your Customer Support?</h3>
           <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-            Join hundreds of companies already using Suh Tech to provide exceptional customer experiences with AI-powered support.
+            Join hundreds of companies already using BotBridge to provide exceptional customer experiences with AI-powered support.
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
             <a href="/signup" className="group bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center">
@@ -315,15 +315,15 @@ const Landing = () => {
                   <Bot className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold">Suh Tech Private Limited</div>
-                  <div className="text-sm text-gray-400">AI-Powered Customer Support</div>
+                  <div className="text-xl font-bold">BotBridge</div>
+                  <div className="text-sm text-gray-400">AI-Powered Support Platform</div>
                 </div>
               </div>
               <p className="text-gray-400 mb-4 max-w-md">
                 Transforming customer support with intelligent AI chatbots and seamless human handoff capabilities.
               </p>
               <div className="text-sm text-gray-500">
-                © 2025 Suh Tech Private Limited. All rights reserved.
+                © 2025 BotBridge. All rights reserved.
               </div>
             </div>
             <div>

@@ -43,7 +43,7 @@ class EmbeddingService {
         tenantId,
         queryEmbedding,
         limit,
-        0.7 // similarity threshold
+        0.5 // Lower threshold for better results
       );
 
       return similarItems;

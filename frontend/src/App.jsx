@@ -1,17 +1,20 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar.jsx';
+import Layout from './components/Layout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { AuthProvider } from './lib/auth.jsx';
 
 // Pages
+import AgentManagement from './pages/AgentManagement.jsx';
 import ApiKeys from './pages/ApiKeys.jsx';
 import ChatTester from './pages/ChatTester.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import HandoffCenter from './pages/HandoffCenter.jsx';
+import IntegrationTest from './pages/IntegrationTest.jsx';
 import KnowledgeBase from './pages/KnowledgeBase.jsx';
 import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
+import Profile from './pages/Profile.jsx';
 import PromptTuner from './pages/PromptTuner.jsx';
 import Signup from './pages/Signup.jsx';
 
@@ -28,78 +31,81 @@ function App() {
           {/* Protected routes */}
           <Route path="/app" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <Dashboard />
-                </main>
-              </div>
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/dashboard" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <Dashboard />
-                </main>
-              </div>
+              <Layout>
+                <Dashboard />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/api-keys" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <ApiKeys />
-                </main>
-              </div>
+              <Layout>
+                <ApiKeys />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/knowledge-base" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <KnowledgeBase />
-                </main>
-              </div>
+              <Layout>
+                <KnowledgeBase />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/prompt-tuner" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <PromptTuner />
-                </main>
-              </div>
+              <Layout>
+                <PromptTuner />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/chat-tester" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <ChatTester />
-                </main>
-              </div>
+              <Layout>
+                <ChatTester />
+              </Layout>
             </ProtectedRoute>
           } />
 
           <Route path="/handoff-center" element={
             <ProtectedRoute>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-1">
-                  <HandoffCenter />
-                </main>
-              </div>
+              <Layout>
+                <HandoffCenter />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/agents" element={
+            <ProtectedRoute>
+              <Layout>
+                <AgentManagement />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/integration-test" element={
+            <ProtectedRoute>
+              <Layout>
+                <IntegrationTest />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Layout>
+                <Profile />
+              </Layout>
             </ProtectedRoute>
           } />
 

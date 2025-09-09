@@ -1,5 +1,5 @@
-import { AlertCircle, MessageSquare, Send } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { AlertCircle, Bell, BellOff, Clock, MessageSquare, Send } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import Badge from '../components/Badge.jsx';
 import { chatAPI } from '../lib/api.js';
@@ -11,14 +11,27 @@ const HandoffCenter = () => {
   const [activeConversation, setActiveConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [notifications, setNotifications] = useState(true);
+  const [newHandoffs, setNewHandoffs] = useState(0);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     loadConversations();
 
     // Set up real-time updates
-    const interval = setInterval(loadConversations, 30000); // Refresh every 30 seconds
+    const interval = setInterval(loadConversations, 10000); // Refresh every 10 seconds
     return () => clearInterval(interval);
   }, [filter]);
+
+  // Play notification sound for new handoffs
+  useEffect(() => {
+    if (newHandoffs > 0 && notifications) {
+      // Create a simple notification sound
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+      audio.volume = 0.3;
+      audio.play().catch(() => {}); // Ignore errors if audio can't play
+    }
+  }, [newHandoffs, notifications]);
 
   const loadConversations = async () => {
     try {
@@ -33,7 +46,18 @@ const HandoffCenter = () => {
       }
 
       const response = await chatAPI.getConversations(params);
-      setConversations(response.data.conversations);
+      const newConversations = response.data.conversations;
+
+      // Check for new handoffs
+      const previousCount = conversations.filter(c => c.status === 'transferred').length;
+      const currentCount = newConversations.filter(c => c.status === 'transferred').length;
+
+      if (currentCount > previousCount) {
+        setNewHandoffs(currentCount - previousCount);
+        setTimeout(() => setNewHandoffs(0), 5000); // Clear after 5 seconds
+      }
+
+      setConversations(newConversations);
     } catch (error) {
       console.error('Failed to load conversations:', error);
     } finally {
@@ -71,9 +95,20 @@ const HandoffCenter = () => {
     return null;
   };
 
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="p-6">
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/4"></div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -90,7 +125,7 @@ const HandoffCenter = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -98,6 +133,33 @@ const HandoffCenter = () => {
           <p className="mt-2 text-gray-600">
             Manage customer conversations and human agent handoffs
           </p>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {/* Notification toggle */}
+          <button
+            onClick={() => setNotifications(!notifications)}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+              notifications
+                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {notifications ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            <span className="text-sm font-medium">
+              {notifications ? 'Notifications On' : 'Notifications Off'}
+            </span>
+          </button>
+
+          {/* New handoffs indicator */}
+          {newHandoffs > 0 && (
+            <div className="flex items-center space-x-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {newHandoffs} new handoff{newHandoffs > 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -146,8 +208,12 @@ const HandoffCenter = () => {
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-600">
-                      {conversation.messageCount} messages
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <span>{conversation.messageCount} messages</span>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-3 w-3" />
+                        <span>{formatTimeAgo(conversation.createdAt)}</span>
+                      </div>
                     </div>
 
                     <div className="text-xs text-gray-500 mt-1">

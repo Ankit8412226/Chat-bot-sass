@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Minimize2 } from 'lucide-react';
+import { MessageCircle, Minimize2, Send, User, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { widgetAPI } from '../lib/api.js';
 
-const ChatWidget = ({ 
+const ChatWidget = ({
   apiKey,
   config = {},
   onMessage = null,
@@ -16,6 +16,8 @@ const ChatWidget = ({
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [error, setError] = useState(null);
+  const [isTransferred, setIsTransferred] = useState(false);
+  const [showTransferButton, setShowTransferButton] = useState(true);
   const messagesEndRef = useRef(null);
 
   const widgetConfig = {
@@ -50,7 +52,7 @@ const ChatWidget = ({
       });
 
       setSessionId(response.data.sessionId);
-      
+
       if (response.data.message) {
         setMessages([{
           id: Date.now(),
@@ -100,6 +102,12 @@ const ChatWidget = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
+      // Check if conversation was transferred
+      if (response.data.status === 'transferred') {
+        setIsTransferred(true);
+        setShowTransferButton(false);
+      }
+
       // Call onMessage callback if provided
       if (onMessage) {
         onMessage({
@@ -114,7 +122,7 @@ const ChatWidget = ({
       console.error('Failed to send message:', error);
       const msg = error.response?.data?.error || error.message || 'Failed to send message. Please try again.';
       setError(msg);
-      
+
       // Add error message
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
@@ -136,6 +144,40 @@ const ChatWidget = ({
     }
   };
 
+  const requestHumanTransfer = async () => {
+    if (!sessionId) return;
+
+    try {
+      setLoading(true);
+      const response = await widgetAPI.requestHandoff(apiKey, {
+        sessionId,
+        reason: 'Customer requested human assistance',
+        priority: 'medium'
+      });
+
+      if (response.data.handoff) {
+        setIsTransferred(true);
+        setShowTransferButton(false);
+
+        // Add system message about transfer
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          role: 'system',
+          content: response.data.handoff.status === 'assigned'
+            ? `You've been connected to ${response.data.handoff.agent.name}. They'll be with you shortly!`
+            : 'I\'m looking for an available agent to help you. Please hold on.',
+          timestamp: new Date(),
+          isTransfer: true
+        }]);
+      }
+    } catch (error) {
+      console.error('Failed to request transfer:', error);
+      setError('Failed to connect to human agent. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getVisitorId = () => {
     let visitorId = localStorage.getItem('chatbot_visitor_id');
     if (!visitorId) {
@@ -146,9 +188,9 @@ const ChatWidget = ({
   };
 
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -180,7 +222,7 @@ const ChatWidget = ({
       {isOpen && (
         <div className={`chat-widget-window ${isOpen ? 'open' : ''}`}>
           {/* Header */}
-          <div 
+          <div
             className="chat-widget-header"
             style={{ background: widgetConfig.primaryColor }}
           >
@@ -222,11 +264,12 @@ const ChatWidget = ({
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`message ${message.role} ${message.isError ? 'error' : ''}`}
+                    className={`message ${message.role} ${message.isError ? 'error' : ''} ${message.isTransfer ? 'transfer' : ''}`}
                   >
                     <div className="text-sm">{message.content}</div>
                     <div className="text-xs opacity-70 mt-1">
                       {formatTime(message.timestamp)}
+                      {message.isTransfer && <span className="ml-2 text-blue-600">• Transfer</span>}
                     </div>
                   </div>
                 ))}
@@ -265,9 +308,23 @@ const ChatWidget = ({
                   </button>
                 </div>
 
+                {/* Transfer button */}
+                {showTransferButton && !isTransferred && (
+                  <div className="mt-2">
+                    <button
+                      onClick={requestHumanTransfer}
+                      disabled={loading || !sessionId}
+                      className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Talk to Human Agent</span>
+                    </button>
+                  </div>
+                )}
+
                 {widgetConfig.showBranding && (
                   <div className="text-xs text-gray-500 text-center mt-2">
-                    Powered by ChatBot SaaS
+                    Powered by BotBridge
                   </div>
                 )}
               </div>

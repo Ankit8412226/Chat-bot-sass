@@ -105,7 +105,7 @@ If you cannot help with something, offer to connect them with a human agent.`
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="p-6">
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-gray-200 rounded w-1/4"></div>
           <div className="space-y-4">
@@ -119,7 +119,7 @@ If you cannot help with something, offer to connect them with a human agent.`
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -401,7 +401,7 @@ If you cannot help with something, offer to connect them with a human agent.`
                     />
                     {settings.chatWidget.showBranding && (
                       <div className="text-xs text-gray-500 text-center mt-2">
-                        Powered by ChatBot SaaS
+                        Powered by BotBridge
                       </div>
                     )}
                   </div>

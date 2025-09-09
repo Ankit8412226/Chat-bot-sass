@@ -23,7 +23,9 @@ const Navbar = () => {
     { name: 'Knowledge Base', href: '/knowledge-base', icon: BookOpen },
     { name: 'Prompt Tuner', href: '/prompt-tuner', icon: Settings },
     { name: 'Chat Tester', href: '/chat-tester', icon: MessageSquare },
-    { name: 'Handoff Center', href: '/handoff-center', icon: Users }
+    { name: 'Agents', href: '/agents', icon: Users },
+    { name: 'Handoff Center', href: '/handoff-center', icon: MessageSquare },
+    { name: 'Test Integration', href: '/integration-test', icon: Bot }
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -36,7 +38,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <Bot className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gray-900">ChatBot SaaS</span>
+              <span className="text-xl font-bold text-gray-900">BotBridge</span>
             </Link>
           </div>
 
