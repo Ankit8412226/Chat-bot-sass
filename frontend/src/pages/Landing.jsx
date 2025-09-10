@@ -237,7 +237,7 @@ const Landing = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      <section id="pricing" className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
@@ -524,19 +524,19 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <div className="space-y-2 text-gray-400">
-                <div>Features</div>
-                <div>API Documentation</div>
-                <div>Integrations</div>
-                <div>Pricing</div>
+                <a href="#features" className="block hover:text-white cursor-pointer">Features</a>
+                <a href="/docs" className="block hover:text-white cursor-pointer">API Documentation</a>
+                <a href="#integrations" className="block hover:text-white cursor-pointer">Integrations</a>
+                <a href="#pricing" className="block hover:text-white cursor-pointer">Pricing</a>
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <div className="space-y-2 text-gray-400">
-                <div>Help Center</div>
-                <div>Contact Us</div>
-                <div>Status Page</div>
-                <div>Community</div>
+                <a href="/docs" className="block hover:text-white cursor-pointer">Help Center</a>
+                <a href="/contact" className="block hover:text-white cursor-pointer">Contact Us</a>
+                <a href="#status" className="block hover:text-white cursor-pointer">Status Page</a>
+                <a href="#community" className="block hover:text-white cursor-pointer">Community</a>
               </div>
             </div>
           </div>

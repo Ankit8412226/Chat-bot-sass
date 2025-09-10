@@ -17,6 +17,7 @@ import Login from './pages/Login.jsx';
 import Profile from './pages/Profile.jsx';
 import PromptTuner from './pages/PromptTuner.jsx';
 import Signup from './pages/Signup.jsx';
+import Docs from './pages/Docs.jsx';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/docs" element={<Docs />} />
           <Route path="/" element={<Landing />} />
 
           {/* Protected routes */}
