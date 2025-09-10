@@ -207,7 +207,7 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      <section id="features" className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Everything You Need to Scale Support</h2>
@@ -442,8 +442,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Technical Features */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+      {/* Technical / Integrations Section */}
+      <section id="integrations" className="py-20 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Built for Enterprise Scale</h2>
