@@ -1,11 +1,15 @@
 import {
   Activity,
+  AlertCircle,
   BookOpen,
+  CheckCircle,
   Clock,
+  Headphones,
   Key,
   MessageSquare,
   Star,
   TrendingUp,
+  UserCheck,
   Users
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';

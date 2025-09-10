@@ -1,37 +1,56 @@
 import {
-  BookOpen,
-  Bot,
-  ChevronLeft,
-  ChevronRight,
-  Key,
-  LayoutDashboard,
-  LogOut,
-  MessageSquare,
-  Settings,
-  User,
-  Users
+    BarChart3,
+    BookOpen,
+    Bot,
+    ChevronLeft,
+    ChevronRight,
+    Headphones,
+    Key,
+    LayoutDashboard,
+    LogOut,
+    MessageSquare,
+    Settings,
+    User,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
 
 const Sidebar = () => {
-  const { user, tenant, logout } = useAuth();
+  const { user, tenant, logout, isAgent } = useAuth();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'API Keys', href: '/api-keys', icon: Key },
-    { name: 'Knowledge Base', href: '/knowledge-base', icon: BookOpen },
-    { name: 'Prompt Tuner', href: '/prompt-tuner', icon: Settings },
-    { name: 'Chat Tester', href: '/chat-tester', icon: MessageSquare },
-    { name: 'Agents', href: '/agents', icon: Users },
-    { name: 'Handoff Center', href: '/handoff-center', icon: MessageSquare },
-    { name: 'Test Integration', href: '/integration-test', icon: Bot },
-    { name: 'Profile', href: '/profile', icon: User }
-  ];
+  // Role-based navigation
+  const getNavigation = () => {
+    if (isAgent) {
+      // Agent-specific navigation
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Handoff Center', href: '/handoff-center', icon: Headphones },
+        { name: 'Knowledge Base', href: '/knowledge-base', icon: BookOpen },
+        { name: 'Profile', href: '/profile', icon: User }
+      ];
+    } else {
+      // Admin/Owner navigation
+      return [
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'API Keys', href: '/api-keys', icon: Key },
+        { name: 'Knowledge Base', href: '/knowledge-base', icon: BookOpen },
+        { name: 'Prompt Tuner', href: '/prompt-tuner', icon: Settings },
+        { name: 'Chat Tester', href: '/chat-tester', icon: MessageSquare },
+        { name: 'Agents', href: '/agents', icon: Users },
+        { name: 'Handoff Center', href: '/handoff-center', icon: Headphones },
+        { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+        { name: 'Test Integration', href: '/integration-test', icon: Bot },
+        { name: 'Profile', href: '/profile', icon: User }
+      ];
+    }
+  };
+
+  const navigation = getNavigation();
 
   const isActive = (href) => location.pathname === href;
 
@@ -48,13 +67,30 @@ const Sidebar = () => {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         {!collapsed && (
           <Link to="/" className="flex items-center space-x-2">
-            <Bot className="h-8 w-8 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">BotBridge</span>
+            <div className={`p-2 rounded-lg ${isAgent ? 'bg-blue-100' : 'bg-primary-100'}`}>
+              {isAgent ? (
+                <Headphones className="h-6 w-6 text-blue-600" />
+              ) : (
+                <Bot className="h-6 w-6 text-primary-600" />
+              )}
+            </div>
+            <div>
+              <span className="text-xl font-bold text-gray-900">BotBridge</span>
+              {isAgent && (
+                <div className="text-xs text-blue-600 font-medium">Agent Portal</div>
+              )}
+            </div>
           </Link>
         )}
         {collapsed && (
           <div className="flex justify-center w-full">
-            <Bot className="h-8 w-8 text-primary-600" />
+            <div className={`p-2 rounded-lg ${isAgent ? 'bg-blue-100' : 'bg-primary-100'}`}>
+              {isAgent ? (
+                <Headphones className="h-6 w-6 text-blue-600" />
+              ) : (
+                <Bot className="h-6 w-6 text-primary-600" />
+              )}
+            </div>
           </div>
         )}
         <button
@@ -95,13 +131,19 @@ const Sidebar = () => {
       <div className="border-t border-gray-200 p-4">
         {/* Tenant Info */}
         {!collapsed && (
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+          <div className={`mb-4 p-3 rounded-lg ${isAgent ? 'bg-blue-50' : 'bg-gray-50'}`}>
             <div className="text-sm font-medium text-gray-900 truncate">
               {tenant?.name || 'Loading...'}
             </div>
             <div className="text-xs text-gray-500 capitalize">
               {tenant?.subscription?.plan || 'free'} plan
             </div>
+            {isAgent && (
+              <div className="flex items-center mt-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                <span className="text-xs text-green-600 font-medium">Agent Online</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -111,8 +153,12 @@ const Sidebar = () => {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center space-x-3 w-full p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-medium text-primary-600">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+              isAgent ? 'bg-blue-100' : 'bg-primary-100'
+            }`}>
+              <span className={`text-sm font-medium ${
+                isAgent ? 'text-blue-600' : 'text-primary-600'
+              }`}>
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
@@ -124,6 +170,11 @@ const Sidebar = () => {
                 <div className="text-xs text-gray-500 truncate">
                   {user?.email || 'user@example.com'}
                 </div>
+                {isAgent && (
+                  <div className="text-xs text-blue-600 font-medium">
+                    Support Agent
+                  </div>
+                )}
               </div>
             )}
           </button>
@@ -135,9 +186,17 @@ const Sidebar = () => {
                 <div className="px-3 py-2 border-b border-gray-100">
                   <div className="text-sm font-medium text-gray-900">{user?.name}</div>
                   <div className="text-xs text-gray-500">{user?.email}</div>
-                  <div className="text-xs text-gray-500 capitalize mt-1">
-                    Role: {user?.role || 'user'}
+                  <div className={`text-xs capitalize mt-1 font-medium ${
+                    isAgent ? 'text-blue-600' : 'text-gray-500'
+                  }`}>
+                    {isAgent ? 'Support Agent' : `Role: ${user?.role || 'user'}`}
                   </div>
+                  {isAgent && (
+                    <div className="flex items-center mt-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                      <span className="text-xs text-green-600">Online</span>
+                    </div>
+                  )}
                 </div>
               )}
 

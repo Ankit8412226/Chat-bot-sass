@@ -1,12 +1,14 @@
 import { AlertCircle, CheckCircle, MessageSquare, User, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import ChatWidget from '../components/ChatWidget.jsx';
+import api from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 
 const IntegrationTest = () => {
   const { tenant } = useAuth();
   const [testResults, setTestResults] = useState({});
   const [isRunning, setIsRunning] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
 
   const runTests = async () => {
     setIsRunning(true);
@@ -15,16 +17,13 @@ const IntegrationTest = () => {
     try {
       // Test 1: Check if tenant has API keys
       try {
-        const response = await fetch('/api/keys', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
+        const { data } = await api.get('/keys');
         results.apiKeys = {
           status: 'success',
-          message: `Found ${data.keys?.length || 0} API keys`,
-          details: data.keys?.length > 0 ? 'API keys are available' : 'No API keys found'
+          message: `Found ${data.apiKeys?.length || 0} API keys`,
+          details: (data.apiKeys?.length || 0) > 0
+            ? 'API keys are available (copy the full key at creation time)'
+            : 'No API keys found'
         };
       } catch (error) {
         results.apiKeys = {
@@ -36,13 +35,8 @@ const IntegrationTest = () => {
 
       // Test 2: Check if team members exist
       try {
-        const response = await fetch('/api/tenant/team', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        const data = await response.json();
-        const agentCount = data.team?.filter(member => member.role === 'agent').length || 0;
+        const { data } = await api.get('/tenant/team');
+        const agentCount = data.team?.filter((member) => member.role === 'agent').length || 0;
         results.agents = {
           status: agentCount > 0 ? 'success' : 'warning',
           message: `Found ${agentCount} agents`,
@@ -174,6 +168,27 @@ const IntegrationTest = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Live Widget Test</h2>
 
           <div className="space-y-4">
+            {/* API Key input */}
+            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Widget API Key</label>
+                  <input
+                    type="text"
+                    value={apiKeyInput}
+                    onChange={(e) => setApiKeyInput(e.target.value)}
+                    placeholder={tenant?.apiKeys?.[0]?.maskedKey ? `Use full key (masked: ${tenant.apiKeys[0].maskedKey})` : 'Paste full API key here'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+              {tenant?.apiKeys?.[0]?.maskedKey && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Note: The API list shows masked keys. You must copy the full key only at creation time and store it securely. Paste the full key above.
+                </p>
+              )}
+            </div>
+
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -205,7 +220,7 @@ const IntegrationTest = () => {
               </p>
               <div className="relative">
                 <ChatWidget
-                  apiKey={tenant?.apiKeys?.[0]?.key || 'test-key'}
+                  apiKey={apiKeyInput || tenant?.apiKeys?.[0]?.key || ''}
                   config={{
                     primaryColor: '#3B82F6',
                     welcomeMessage: 'Hi! I\'m your AI assistant. How can I help you today?',
