@@ -9,6 +9,7 @@ import AgentManagement from './pages/AgentManagement.jsx';
 import ApiKeys from './pages/ApiKeys.jsx';
 import ChatTester from './pages/ChatTester.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Docs from './pages/Docs.jsx';
 import HandoffCenter from './pages/HandoffCenter.jsx';
 import IntegrationTest from './pages/IntegrationTest.jsx';
 import KnowledgeBase from './pages/KnowledgeBase.jsx';
@@ -17,7 +18,7 @@ import Login from './pages/Login.jsx';
 import Profile from './pages/Profile.jsx';
 import PromptTuner from './pages/PromptTuner.jsx';
 import Signup from './pages/Signup.jsx';
-import Docs from './pages/Docs.jsx';
+import WidgetTest from './pages/WidgetTest.jsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/docs" element={<Docs />} />
+          <Route path="/widget-test" element={<WidgetTest />} />
           <Route path="/" element={<Landing />} />
 
           {/* Protected routes */}
