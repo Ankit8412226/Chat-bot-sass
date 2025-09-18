@@ -1,5 +1,5 @@
 import { ArrowRight, Bot, Lock, Mail } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
 
@@ -143,14 +143,7 @@ const Login = () => {
           </div>
         </form>
 
-        {/* Demo credentials */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials</h3>
-          <div className="text-xs text-gray-600 space-y-1">
-            <div>Email: demo@example.com</div>
-            <div>Password: demo123</div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
